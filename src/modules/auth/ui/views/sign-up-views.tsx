@@ -30,7 +30,7 @@ const formSchema = z.object({
 
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
-    path: ["confimPassword"], 
+    path: ["confirmPassword"], 
 })
 
 
@@ -46,6 +46,7 @@ export const SignUpView = () => {
             name: "",
             email: "",
             password: "",
+            confirmPassword: "",
         },
     });
 
@@ -67,6 +68,7 @@ export const SignUpView = () => {
                 },
                 onError: ({ error }) => {
                     setError(error.message);
+                     setPending(false);
                 },
             },
         );
@@ -86,7 +88,7 @@ export const SignUpView = () => {
                                     <h1 className="text-2xl font-bold">
                                         let's get started
                                     </h1>
-                                    <p className="text-muted-foregroud text-balance">
+                                    <p className="text-muted-foreground text-balance">
                                         Create your account
                                     </p>
                                 </div>
@@ -99,7 +101,7 @@ export const SignUpView = () => {
                                                 <FormLabel>Name</FormLabel>
                                                 <FormControl>
                                                     <Input
-                                                        type="name"
+                                                        type="text"
                                                         placeholder="john doe"
                                                         {...field}
                                                     />
@@ -137,6 +139,25 @@ export const SignUpView = () => {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Password</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="password"
+                                                        placeholder="********"
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <div className="grid gap-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="confirmPassword"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Confirm Password</FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         type="password"
