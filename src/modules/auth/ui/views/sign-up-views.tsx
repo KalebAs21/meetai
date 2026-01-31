@@ -7,6 +7,7 @@ import { OctagonAlertIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {FaGithub, FaGoogle} from "react-icons/fa";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -60,15 +61,37 @@ export const SignUpView = () => {
                 name: data.name,
                 email: data.email,
                 password: data.password,
+                callbackURL: "/",  
             },
             {
                 onSuccess: () => {
-                    router.push("/");
                     setPending(false);
+                    router.push("/")
                 },
                 onError: ({ error }) => {
                     setError(error.message);
                      setPending(false);
+                },
+            },
+        );
+    };
+
+    const onSocial = (provider: "github" | "google") => {
+        setError(null);
+        setPending(true);
+
+        authClient.signIn.social(
+            {
+                provider: provider,
+                callbackURL: "/",
+            },
+            {
+                onSuccess: () => {
+                    setPending(false);
+                },
+                onError: ({ error }) => {
+                    setError(error.message);
+                    setPending(false);
                 },
             },
         );
@@ -157,7 +180,9 @@ export const SignUpView = () => {
                                         name="confirmPassword"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Confirm Password</FormLabel>
+                                                <FormLabel>
+                                                    Confirm Password
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         type="password"
@@ -197,20 +222,22 @@ export const SignUpView = () => {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <Button
+                                        onClick={() => onSocial("google")}
                                         disabled={pending}
                                         className="w-full"
                                         variant="outline"
                                         type="button"
                                     >
-                                        Google
+                                        <FaGoogle />
                                     </Button>
                                     <Button
+                                        onClick={() => onSocial("github")}
                                         disabled={pending}
                                         className="w-full"
                                         variant="outline"
                                         type="button"
                                     >
-                                        GitHub
+                                        <FaGithub />
                                     </Button>
                                 </div>
 
