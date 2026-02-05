@@ -21,14 +21,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <TRPCReactProvider>
+    
     <html lang="en">
+      <TRPCReactProvider>
       <body
         className={`${inter.className} antialiased`}
       >
         {children}
       </body>
-      </html>
-      </TRPCReactProvider>
+       </TRPCReactProvider>
+    </html>
+     
   );
 }
