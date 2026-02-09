@@ -15,18 +15,32 @@ import {ErrorBoundary} from "react-error-boundary"
 import {getQueryClient, trpc} from "@/trpc/server"
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { AgentsListHeader } from '@/modules/agents/ui/views/components/agents-list-header'
+import { SearchParams } from 'nuqs'
+import { LoadingState } from '@/components/loading-state'
+import { loadSearchParams } from '@/modules/agents/params'
 
-const page = async () => {
-  const queryClient = getQueryClient()
-    void queryClient.prefetchQuery(trpc.agents.getMany.queryOptions())
-    const session = await auth.api.getSession({
-        headers: await headers()
-      })
+interface Props{
+    searchParams: Promise<SearchParams>;
+}
+
+const page = async ({ searchParams }: Props) => {
     
-      if (!session) {
-        
-        redirect("/sign-in")
-      }
+    const filters = await loadSearchParams(searchParams)
+
+     const session = await auth.api.getSession({
+         headers: await headers(),
+     });
+
+     if (!session) {
+         redirect("/sign-in");
+     }
+
+
+  const queryClient = getQueryClient()
+    void queryClient.prefetchQuery(trpc.agents.getMany.queryOptions({
+        ...filters
+    }))
+   
   return (
       <>
           <AgentsListHeader />
