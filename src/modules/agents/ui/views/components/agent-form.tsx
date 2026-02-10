@@ -42,11 +42,7 @@ export const AgentForm = ({
              await   queryClient.invalidateQueries(
                     trpc.agents.getMany.queryOptions({})
                 )
-                if (initialValues?.id) {
-                await    queryClient.invalidateQueries(
-                        trpc.agents.getOne.queryOptions({id: initialValues.id}),
-                    )
-                }
+               //to do Invalidate free tier usage
                 onSuccess?.();  
             },
             onError: (error) => {
@@ -55,6 +51,31 @@ export const AgentForm = ({
             },
         }),
     );
+
+      const updateAgent = useMutation(
+          trpc.agents.update.mutationOptions({
+              onSuccess: async () => {
+                  await queryClient.invalidateQueries(
+                      trpc.agents.getMany.queryOptions({}),
+                  );
+                  if (initialValues?.id) {
+                      await queryClient.invalidateQueries(
+                          trpc.agents.getOne.queryOptions({
+                              id: initialValues.id,
+                          }),
+                      );
+                  }
+                  onSuccess?.();
+              },
+              onError: (error) => {
+                  toast.error(error.message);
+                  //todo: check if error code is "FORBIDDEN", redirect to "/upgrade"
+              },
+          }),
+      );
+
+
+
 
     // Add return statement here
     //return <div>Form content goes here</div>;
@@ -68,11 +89,12 @@ export const AgentForm = ({
 
     })
     const isEdit = !!initialValues?.id;
-    const isPending = createAgent.isPending; // Assuming you have update mutation too
+    const isPending = createAgent.isPending || updateAgent.isPending;
+    // Assuming you have update mutation too
 
     const onSubmit = (values: z.infer<typeof agentsInsertSchema>) => {
         if (isEdit && initialValues?.id) {
-            // updateAgent.mutate({ id: initialValues.id, ...values });
+             updateAgent.mutate({ ...values, id: initialValues.id });
             console.log("TODO: updateAgent", initialValues.id, values);
         } else {
             createAgent.mutate(values);
