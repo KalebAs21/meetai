@@ -4,6 +4,7 @@ import React, { Suspense } from 'react'
 import { getQueryClient, trpc } from '@/trpc/server';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
+import { MeetingsListHeader } from '@/modules/meetings/ui/components/meetings-list-header';
 
 
 function page() {
@@ -12,15 +13,18 @@ function page() {
     trpc.meetings.getMany.queryOptions({})
   )
   
-  return (
-      <HydrationBoundary state={dehydrate(queryClient)}>
-          <Suspense fallback={<MeetigsViewLoading />}>
-              <ErrorBoundary fallback={<MeetingsViewError />}>
-                  <MeetingsView />
-              </ErrorBoundary>
-          </Suspense>
-      </HydrationBoundary>
-  );
+    return (
+        <>
+            <MeetingsListHeader />
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <Suspense fallback={<MeetigsViewLoading />}>
+                    <ErrorBoundary fallback={<MeetingsViewError />}>
+                        <MeetingsView />
+                    </ErrorBoundary>
+                </Suspense>
+            </HydrationBoundary>
+        </>
+    );
 }
 
 export default page
